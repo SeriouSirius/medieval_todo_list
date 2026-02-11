@@ -1,0 +1,667 @@
+:root {
+    --parchment: #f4e4bc;
+    --ink: #2c241b;
+    --wax-red: #8b0000;
+    --wood: #5d4037;
+    --gold: #d4af37;
+}
+
+body {
+    font-family: 'MedievalSharp', cursive;
+    background-color: #222;
+    background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+    /* Simple wood texture */
+    background-attachment: fixed;
+    /* Infinite background feel */
+    background-size: auto;
+    color: var(--ink);
+    margin: 0;
+    overflow: hidden;
+    /* Prevent native scrolling, we drag items on a fixed board */
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    user-select: none;
+    /* easier dragging */
+}
+
+/* The Input Control Panel (Fixed at top) */
+.scroll-container {
+    background-color: var(--parchment);
+    width: 90%;
+    max-width: 500px;
+    padding: 1rem 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    position: fixed;
+    /* Fixed UI */
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 2px solid var(--wood);
+    z-index: 100;
+}
+
+/* Scroll rolled ends effect */
+.scroll-container::before,
+.scroll-container::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    background: var(--wood);
+    left: 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-container::before {
+    top: -10px;
+}
+
+.scroll-container::after {
+    bottom: -10px;
+}
+
+header h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin: 0.5rem 0;
+    border-bottom: 2px solid var(--ink);
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0.5rem;
+    align-items: flex-end;
+}
+
+#quest-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    font-family: 'MedievalSharp', cursive;
+    font-size: 1.2rem;
+    color: var(--ink);
+    outline: none;
+    padding: 5px;
+    resize: none;
+    overflow: hidden;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
+}
+
+#add-quest-btn {
+    background: var(--wax-red);
+    color: #fff;
+    border: none;
+    font-family: 'MedievalSharp', cursive;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 50% 20% / 10% 40%;
+    transition: transform 0.1s;
+}
+
+#add-quest-btn:active {
+    transform: scale(0.95);
+}
+
+footer {
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+/* The Board Area */
+#quest-board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass through to background if needed */
+}
+
+/* Draggable Scroll Item */
+.quest-scroll {
+    position: absolute;
+    width: 200px;
+    min-height: 100px;
+    background: url('assets/parchment_scroll.png') no-repeat center center;
+    background-size: 100% 100%;
+    /* Stretch to fit */
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.6));
+    cursor: move;
+    pointer-events: auto;
+    transition: transform 0.1s;
+    user-select: none;
+    text-align: center;
+    /* Phase 5: Box Sizing for borders */
+    box-sizing: border-box;
+    /* Min dimensions */
+    min-width: 150px;
+    min-height: 100px;
+}
+
+.quest-scroll.selected {
+    border: 2px dashed #80613C;
+    /* Sepia */
+    z-index: 1000;
+    /* Keep on top when selected */
+}
+
+/* Resize Handle */
+.resize-handle {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 15px;
+    height: 15px;
+    background: #80613C;
+    /* Sepia to match border */
+    cursor: nwse-resize;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.quest-scroll.selected .resize-handle {
+    opacity: 0.7;
+}
+
+.resize-handle:hover {
+    opacity: 1;
+}
+
+/* Dimension Controls */
+.dimension-controls {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment);
+    border: 1px solid #80613C;
+    /* Sepia */
+    padding: 2px;
+    display: none;
+    /* Hidden by default */
+    gap: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+.quest-scroll.selected .dimension-controls {
+    display: flex;
+}
+
+.dimension-input {
+    width: 40px;
+    /* Smaller width for two inputs */
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #80613C;
+    /* Sepia */
+    font-size: 0.8rem;
+    font-family: 'MedievalSharp', cursive;
+    text-align: center;
+    color: var(--ink);
+    margin: 0 2px;
+}
+
+.dimension-btn {
+    background: #80613C;
+    /* Sepia */
+    color: var(--parchment);
+    border: none;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 2px;
+    padding: 0 5px;
+}
+
+.quest-scroll.tall {
+    min-height: 200px;
+    width: 220px;
+}
+
+.quest-scroll:active {
+    transform: scale(1.05);
+    z-index: 999 !important;
+}
+
+.quest-scroll span {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
+.quest-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.quest-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: scale 0.2s;
+}
+
+.quest-btn:hover {
+    transform: scale(1.2);
+}
+
+.complete-btn {
+    color: var(--wood);
+}
+
+.delete-btn {
+    color: var(--wax-red);
+}
+
+/* Rubbish Bin */
+#rubbish-bin-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    z-index: 1000;
+    transition: transform 0.2s;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#rubbish-bin-container:hover {
+    transform: scale(1.1);
+}
+
+#rubbish-bin {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+/* Crumpled Paper Animation Class */
+.crumpled {
+    background-image: url('assets/crumpled_paper.png') !important;
+    background-color: transparent;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 150px !important;
+    height: 150px !important;
+    min-height: 50px !important;
+    border-radius: 0;
+    /* Remove circle if it's an image */
+    box-shadow: none;
+    display: flex;
+    padding: 0 !important;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: none;
+}
+
+.crumpled * {
+    display: none;
+}
+
+/* --- Phase 7: Fire Purge --- */
+#fire-purge-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 3rem;
+    cursor: pointer;
+    z-index: 1000;
+    filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5));
+    transition: transform 0.2s, filter 0.2s;
+    user-select: none;
+}
+
+#fire-purge-btn:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 10px orange);
+}
+
+#fire-purge-btn:active {
+    transform: scale(0.9);
+}
+
+#fire-wave {
+    position: fixed;
+    bottom: -100vh;
+    /* Start off-screen bottom-left area roughly */
+    left: -100vw;
+    width: 300vw;
+    /* Large enough to cover screen when rotating/moving */
+    height: 300vw;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 69, 0, 0.8) 50%, rgba(255, 140, 0, 0.5) 60%, transparent 70%);
+    pointer-events: none;
+    z-index: 2000;
+    transform-origin: 0% 100%;
+    /* Bottom-Left corner */
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Animation class to trigger the sweep */
+.fire-sweeping {
+    animation: fireSweep 2s ease-in-out forwards;
+}
+
+@keyframes fireSweep {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(-45deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(100vw, -100vh) rotate(-45deg);
+        /* Move diagonally up-right */
+    }
+}
+
+/* Burning Effect for Scrolls */
+.burning {
+    pointer-events: none;
+    /* No interaction while dying */
+    filter: grayscale(100%) brightness(0.2) sepia(100%) hue-rotate(-50deg) saturate(500%);
+    /* Charred/Ember look */
+    transition: filter 0.5s, opacity 1s, transform 1s;
+    opacity: 0 !important;
+    transform: scale(0.8) translateY(-20px) !important;
+    /* Wither away */
+}
+
+/* Phase 8: Hover Effects */
+#clear-all-btn,
+#close-log-btn {
+    transition: transform 0.3s ease, background-color 0.3s;
+}
+
+#clear-all-btn:hover,
+#close-log-btn:hover {
+    transform: translateY(-25px);
+    /* Pull up effect */
+    filter: brightness(1.2);
+}
+
+/* Custom Modal */
+#confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 3000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#confirm-modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--parchment);
+    padding: 2rem;
+    border: 2px solid var(--wood);
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 50px rgba(139, 69, 19, 0.2);
+    max-width: 400px;
+    font-family: 'MedievalSharp', cursive;
+}
+
+.modal-content h2 {
+    color: var(--wax-red);
+    margin-top: 0;
+}
+
+.modal-content p {
+    color: var(--ink);
+    font-size: 1.2rem;
+}
+
+.modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: transform 0.2s;
+}
+
+.modal-btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-confirm {
+    background: var(--wax-red);
+    color: var(--parchment);
+}
+
+.btn-cancel {
+    background: var(--wood);
+    color: var(--parchment);
+}
+
+#completed-log {
+    position: fixed;
+    top: 0;
+    right: -500px;
+    /* Hidden */
+    width: 350px;
+    /* Slightly wider for controls */
+    height: 100vh;
+    background: var(--parchment);
+    border-left: 5px solid var(--wood);
+    box-shadow: -10px 0 20px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    transition: right 0.3s ease-in-out;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+#completed-log.open {
+    right: 0;
+}
+
+#completed-log h2 {
+    text-align: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 1rem;
+    margin-top: 0;
+}
+
+#completed-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+}
+
+#completed-list li {
+    padding: 10px;
+    border-bottom: 1px dashed var(--ink);
+    color: var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    /* Align top for multiline */
+    gap: 10px;
+}
+
+#completed-list li span {
+    flex-grow: 1;
+    white-space: pre-wrap;
+    /* Preserve newlines */
+    word-break: break-word;
+    opacity: 0.8;
+    text-decoration: line-through;
+    /* Keep strikethrough style */
+    text-align: left;
+}
+
+#completed-list li button {
+    background: transparent;
+    border: none;
+    color: var(--wax-red);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+#completed-list li button:hover {
+    font-weight: bold;
+    transform: scale(1.1);
+}
+
+.log-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    gap: 10px;
+}
+
+.log-controls button {
+    flex: 1;
+    padding: 10px;
+    font-family: 'MedievalSharp', cursive;
+    cursor: pointer;
+    font-size: 1rem;
+    border: none;
+    color: var(--parchment);
+}
+
+#close-log-btn {
+    background: var(--wood);
+}
+
+#clear-all-btn {
+    background: var(--wax-red);
+}
+
+#close-log-btn:hover,
+#clear-all-btn:hover {
+    filter: brightness(1.1);
+}
+
+
+/* Animation Turn Overlay */
+#animation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+#animation-overlay.hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#writing-area {
+    position: relative;
+    width: 400px;
+    height: 300px;
+}
+
+#anim-scroll {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    object-fit: contain;
+}
+
+#anim-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    z-index: 2;
+    font-family: 'MedievalSharp', cursive;
+    color: var(--ink);
+}
+
+#anim-hand {
+    position: absolute;
+    width: 200px;
+    top: 50%;
+    left: 50%;
+    z-index: 3;
+    pointer-events: none;
+    transform: translate(0, 0);
+}
+
+@keyframes writeText {
+    0% {
+        transform: translate(0, 20px) rotate(-10deg);
+    }
+
+    25% {
+        transform: translate(10px, -10px) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(5px, 10px) rotate(-5deg);
+    }
+
+    75% {
+        transform: translate(15px, -5px) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(20px, 20px) rotate(-10deg);
+    }
+}
+
+.writing {
+    animation: writeText 0.5s infinite linear;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Medieval Quest Log</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="animation-overlay" class="hidden">
+        <div id="writing-area">
+            <img src="assets/parchment_scroll.png" id="anim-scroll" alt="Scroll">
+            <div id="anim-text"></div>
+            <img src="assets/hand_with_quill.png" id="anim-hand" alt="Hand">
+        </div>
+    </div>
+
+    <div class="scroll-container">
+        <header>
+            <h1>Quest Log</h1>
+        </header>
+
+        <div class="input-group">
+            <textarea id="quest-input" placeholder="New Quest... (Shift+Enter for new line)" rows="1"></textarea>
+            <button id="add-quest-btn">Add Quest</button>
+        </div>
+
+        <footer>
+            <p>Chronicles of the Realm</p>
+        </footer>
+    </div>
+
+    <div id="quest-board">
+        <!-- Quests will appear here as draggable scrolls -->
+    </div>
+
+    <!-- Rubbish Bin -->
+    <div id="rubbish-bin-container" title="Discarded Quests">
+        <img id="rubbish-bin" src="assets/rubbish_bin.png" alt="Rubbish Bin">
+    </div>
+
+    <!-- Phase 7: Fire Purge -->
+    <div id="fire-purge-btn" title="Purge with Fire">
+        🔥
+    </div>
+    <div id="fire-wave"></div>
+
+    <!-- Off-Canvas Completed List -->
+    <div id="completed-log" class="hidden">
+        <h2>Completed Quests</h2>
+        <ul id="completed-list">
+            <!-- Completed items go here -->
+        </ul>
+        <div class="log-controls">
+            <button id="clear-all-btn">Burn All Records</button>
+            <button id="close-log-btn">Close</button>
+        </div>
+    </div>
+
+    <!-- Phase 8: Custom Confirmation Modal -->
+    <div id="confirm-modal" class="hidden">
+        <div class="modal-content">
+            <h2>Burn All Records?</h2>
+            <p>Are you sure you want to burn all completed quests? <br>This cannot be undone!</p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="modal-btn btn-cancel">Nah, Keep Them</button>
+                <button id="modal-confirm-btn" class="modal-btn btn-confirm">Yes, Burn Them!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
