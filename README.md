@@ -46,4 +46,6 @@ No installation required! This is a static web application.
 -   **Assets**: Custom parchment, quill, and wax seal graphics.
 
 ---
-*Forged in code by [Your Name/Antigravity]*
+*Forged in code by [Seriousirius](https://github.com/Seriousirius)*
+---
+*A vibe coding creation*
